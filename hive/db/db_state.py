@@ -42,6 +42,8 @@ class DbState:
             print("[INIT] Continue with initial sync...")
         else:
             print("[INIT] Hive initialized.")
+            cls._after_initial_sync()
+
 
     @classmethod
     def db(cls):
@@ -128,11 +130,17 @@ class DbState:
 
         for index in cls._disableable_indexes():
             print("Create index %s.%s" % (index.table, index.name))
-            index.create(engine)
+            try:
+                index.create(engine)
+            except Exception as e:
+                print(repr(e))
 
         for key in cls._all_foreign_keys():
             print("Create fk %s" % (key.name))
-            key.create(engine)
+            try:
+                key.create(engine)
+            except Exception as e:
+                print(repr(e))
 
         print("[INIT] Finish post-initial sync hooks")
 
